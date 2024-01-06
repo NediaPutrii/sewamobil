@@ -113,7 +113,33 @@ class SewaController extends Controller
      */
     public function edit($id)
     {
-        //
+        $user = Auth::user()->id;
+        // $sewaku = DB::select("SELECT * from sewa JOIN mobil on sewa.id_mobil=mobil.id_mobil where sewa.id_user='$user' and sewa.id_mobil='$id'");
+        // $sewakuactive = 'active';
+        // $role = Auth::user()->role;
+        // return $sewaku;
+        // if($role=='3'){
+            
+        //     return view('penyewa.returncar', 
+        //         [
+        //             'sewakuactive' => $sewakuactive,
+        //             'sewaku' => $sewaku
+        //         ]);
+        //     }else{
+        //         return view('error');
+        //     }
+
+
+        $sewaku = Sewa::join('mobil', 'sewa.id_mobil', '=', 'mobil.id_mobil')
+        ->where('sewa.id_mobil' , $id)
+        ->where('sewa.id_user',$user)
+        ->first();
+        $sewakuactive = 'active';
+        return view('penyewa.returncar', 
+        [
+            'sewaku' => $sewaku,
+            'sewakuactive' => $sewakuactive
+        ]);
     }
 
     /**
@@ -125,7 +151,39 @@ class SewaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // return $request;
+
+        $post = Sewa::where('id_sewa',$id)
+        ->first();
+        $post->where('id_sewa',$id)
+        ->update([
+            'tanggal_pengembalian' => $request->tanggal_pengembalian
+        ]) ;
+
+
+        $mobil = Mobil::where('id_mobil',$request->id_mobil)
+        ->first();
+        $mobil->where('id_mobil',$request->id_mobil)
+        ->update([
+            'status' => 1
+        ]) ;
+      
+
+        if ($post&&$mobil) {
+            return redirect()
+                ->route('sewaindex')
+                ->with([
+                    'success' => 'Mobil has been returned successfully'
+                ]);
+        } else {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with([
+                    'error' => 'Some problem has occured, please try again'
+                ]);
+        }
+        
     }
 
     /**

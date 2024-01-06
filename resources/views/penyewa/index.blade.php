@@ -31,7 +31,7 @@
         @include('layout.notif')
         <div class="row text-end">
             <div class="col-sm-12 text-end">
-               
+
             </div>
         </div>
 
@@ -41,7 +41,9 @@
                     <tr>
                         <th>Merek</th>
                         <th>Plat Nomor</th>
-                        <th>Harga Sewa / Hari</th>
+                        <th>Harga</th>
+                        <th>Tanggal Awal Sewa</th>
+                        <th>Tanggal Akhir Sewa</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -52,12 +54,22 @@
                             <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $sewa->merek }}</strong>
                             </td>
                             <td>{{ $sewa->noplat }}</td>
-                            <td>{{ 'Rp ' . number_format($sewa->harga, 0, ',', '.') }}</td>
+                            @php
+                                $tanggalAwal = new DateTime($sewa->tanggal_mulai_sewa);
+                                $tanggalAkhir = new DateTime($sewa->tanggal_akhir_sewa);
+
+                                $selisih = $tanggalAwal->diff($tanggalAkhir)->days;
+
+                            @endphp
+                            <td>{{ 'Rp ' . number_format($selisih * $sewa->harga, 0, ',', '.') }}
+                            </td>
+                            <td>{{ date('D, d F Y', strtotime($sewa->tanggal_mulai_sewa)) }}</td>
+                            <td>{{ date('D, d F Y', strtotime($sewa->tanggal_akhir_sewa)) }}</td>
                             <td>
-                                @if ($sewa->status == 1)
-                                    <span class="badge bg-label-primary me-1">Available</span>
+                                @if ($sewa->tanggal_pengembalian == null)
+                                    <span class="badge bg-label-danger me-1">Not Returned</span>
                                 @else
-                                    <span class="badge bg-label-warning me-1">Rent</span>
+                                    <span class="badge bg-label-primary me-1">Returned</span>
                                 @endif
                             </td>
                             <td>
@@ -69,7 +81,7 @@
                                     <div class="dropdown-menu">
                                         <form onsubmit="return confirm('Anda yakin ingin menghapus tugas ini  ?');"
                                             action="" method="POST">
-                                            <a class="dropdown-item" href="{{ route('sewakureturn', $sewa->id_mobil) }}">
+                                            <a class="dropdown-item" href="{{ route('returncar', $sewa->id_mobil) }}">
                                                 Return Car</a>
                                             @csrf
                                             @method('DELETE')

@@ -36,5 +36,6 @@ Route::delete('/mobilkudestroy/{id}','App\Http\Controllers\MobilController@destr
 Route::get('/sewaindex', 'App\Http\Controllers\SewaController@index')->name('sewaindex');
 Route::get('/sewacreate/{id_mobil}', 'App\Http\Controllers\SewaController@create')->name('sewacreate');
 Route::post('/sewastore', 'App\Http\Controllers\SewaController@store')->name('sewastore');
+Route::get('/returncar/{id}','App\Http\Controllers\SewaController@edit')->name('returncar');
 Route::put('/sewakureturn/{id}','App\Http\Controllers\SewaController@update')->name('sewakureturn');
 
